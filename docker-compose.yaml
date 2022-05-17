@@ -1,6 +1,17 @@
 version: '3.4'
 
 services:
+  pruebaapi:
+    image: api
+    build:
+      context: .
+      dockerfile: src/PruebaBackAPI/Dockerfile
+    ports:
+      - 7300:7300
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORT=https://+:5001
+      - ASPNETCORE_URLS=http://+:7300
 
   database:
     image: 'postgres:latest'
@@ -14,14 +25,4 @@ services:
     volumes:
       - ./db-data/:/var/lib/postgresql/data/
 
-  pruebaapi:
-    image: api
-    build:
-      context: .
-      dockerfile: src/PruebaBackAPI/Dockerfile
-    ports:
-      - 7300:7300
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORT=https://+:5001
-      - ASPNETCORE_URLS=http://+:7300
+

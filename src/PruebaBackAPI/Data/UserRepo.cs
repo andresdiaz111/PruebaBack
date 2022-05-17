@@ -13,24 +13,40 @@ public class UserRepo<T> : IUserRepo<T> where T : User
         _entities = context.Set<T>();
         _context = context;
     }
-    public Task<T> CreateUser(T user)
+    public async Task CreateUser(T user)
     {
-        throw new NotImplementedException();
+        if (user == null)
+        {
+            throw new ArgumentNullException(nameof(user));
+        }
+
+        await _context.Users.AddAsync(user);
     }
 
-    public Task<PaginationResult<T>> GetAllUsers(int page, int perPage)
+    public async Task<PaginationResult<T>> GetAllUsers(int page, int perPage)
     {
-        throw new NotImplementedException();
+        var count = await _entities.CountAsync();
+        var entsToSkip = (page - 1) * perPage;
+        var entities = await _entities.Skip(entsToSkip).Take(perPage).ToListAsync();
+        return new PaginationResult<T>
+        {
+            TotalCount = count,
+            Results = entities,
+            ResultPerPage = perPage,
+            PageNumber = page,
+        };
     }
 
-    public Task<T> GetUserById(int id)
+    public async Task<T> GetUserById(int id)
     {
-        throw new NotImplementedException();
+        return await _entities.SingleOrDefaultAsync(ent => ent.id == id);
     }
 
-    public bool SaveChanges()
+    public async Task<bool> SaveChanges()
     {
-        throw new NotImplementedException();
+        var save = await _context.SaveChangesAsync();
+
+        return (save >= 0);
     }
 
     public Task<T> UpdateUser(T user)
