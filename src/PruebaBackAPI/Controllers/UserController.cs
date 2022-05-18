@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PruebaBackAPI.Data;
 using PruebaBackAPI.Models;
+using System;
 using PruebaBackAPI.Dtos;
 using AutoMapper;
 namespace PruebaBackAPI.Controllers;
@@ -63,5 +64,25 @@ public class UserController : ControllerBase
 
         var userCreated = _mapper.Map<UserDto>(userModel);
         return CreatedAtRoute(nameof(GetUserById), new {Id = userCreated.Id}, userCreated);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateUser(int id, UserUpdateDto user)
+    {
+        if (user == null || id == null)
+            return NoContent();
+
+        var userFromRepo = await _repository.GetUserById(id);
+        if (userFromRepo == null)
+            return NotFound("User not found");
+
+        userFromRepo.email = !string.IsNullOrWhiteSpace(user.Email) ? user.Email : userFromRepo.email;
+        userFromRepo.first_name = !string.IsNullOrWhiteSpace(user.First_name) ? user.First_name : userFromRepo.first_name;
+        userFromRepo.last_name = !string.IsNullOrWhiteSpace(user.Last_name) ? user.Last_name : userFromRepo.last_name;
+        userFromRepo.avatar = !string.IsNullOrWhiteSpace(user.Avatar) ? user.Avatar : userFromRepo.avatar;
+        await _repository.SaveChanges();
+
+        return Ok("User updated");
+
     }
 }

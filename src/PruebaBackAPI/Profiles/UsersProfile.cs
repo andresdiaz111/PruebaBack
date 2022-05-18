@@ -11,5 +11,6 @@ public class UsersProfile : Profile
         CreateMap<User, UserDto>();
         CreateMap<PaginationResult<User>, PaginationDto<UserDto>>();
         CreateMap<UserCreateDto, User>();
+        CreateMap<UserUpdateDto, User>();
     }
 }

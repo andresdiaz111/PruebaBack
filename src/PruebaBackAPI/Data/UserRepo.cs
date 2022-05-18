@@ -27,7 +27,7 @@ public class UserRepo<T> : IUserRepo<T> where T : User
     {
         var count = await _entities.CountAsync();
         var entsToSkip = (page - 1) * perPage;
-        var entities = await _entities.Skip(entsToSkip).Take(perPage).ToListAsync();
+        var entities = await _entities.OrderBy(ent => ent.id).Skip(entsToSkip).Take(perPage).ToListAsync();
         return new PaginationResult<T>
         {
             TotalCount = count,
@@ -49,8 +49,8 @@ public class UserRepo<T> : IUserRepo<T> where T : User
         return (save >= 0);
     }
 
-    public Task<T> UpdateUser(T user)
+    public void UpdateUser(T user)
     {
-        throw new NotImplementedException();
+        //Prueba
     }
 }
