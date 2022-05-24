@@ -15,10 +15,7 @@ public class UserRepo<T> : IUserRepo<T> where T : User
     }
     public async Task CreateUser(T user)
     {
-        if (user == null)
-        {
-            throw new ArgumentNullException(nameof(user));
-        }
+        ArgumentNullException.ThrowIfNull(user);
 
         await _context.Users.AddAsync(user);
     }
@@ -28,6 +25,7 @@ public class UserRepo<T> : IUserRepo<T> where T : User
         var count = await _entities.CountAsync();
         var entsToSkip = (page - 1) * perPage;
         var entities = await _entities.OrderBy(ent => ent.id).Skip(entsToSkip).Take(perPage).ToListAsync();
+        
         return new PaginationResult<T>
         {
             TotalCount = count,
@@ -49,8 +47,4 @@ public class UserRepo<T> : IUserRepo<T> where T : User
         return (save >= 0);
     }
 
-    public void UpdateUser(T user)
-    {
-        //Prueba
-    }
 }
