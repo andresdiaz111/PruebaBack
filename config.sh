@@ -4,5 +4,7 @@ dotnet user-secrets set client_id 0640000b-ec0b-4207-aab3-61e0481c405d --project
 dotnet user-secrets set UserID dbuser --project ./src/PruebaBackAPI/PruebaBackAPI.csproj
 dotnet user-secrets set Password Inicio.123 --project ./src/PruebaBackAPI/PruebaBackAPI.csproj
 dotnet restore "./src/PruebaBackAPI/PruebaBackAPI.csproj"
+dotnet restore "./test/PruebaBackAPI.Test/PruebaBackAPI.Test.csproj"
 dotnet build "./src/PruebaBackAPI/PruebaBackAPI.csproj"
 dotnet-ef database update --project ./src/PruebaBackAPI/PruebaBackAPI.csproj
+dotnet run --project ./src/PruebaBackAPI/PruebaBackAPI.csproj
