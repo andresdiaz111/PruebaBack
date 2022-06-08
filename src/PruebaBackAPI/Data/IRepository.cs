@@ -2,7 +2,7 @@ using PruebaBackAPI.Models;
 
 namespace PruebaBackAPI.Data;
 
-public interface IUserRepo<T> where T : User
+public interface IRepository<T>
 {
     Task<PaginationResult<T>> GetAllUsers(int page, int perPage);
     Task<T> GetUserById(int id);

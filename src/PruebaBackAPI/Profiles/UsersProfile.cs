@@ -4,7 +4,7 @@ using PruebaBackAPI.Models;
 
 namespace PruebaBackAPI.Profiles;
 
-public class UsersProfile : Profile 
+public class UsersProfile : Profile
 {
     public UsersProfile()
     {

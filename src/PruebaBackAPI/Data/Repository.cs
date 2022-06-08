@@ -1,23 +1,24 @@
-using PruebaBackAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using PruebaBackAPI.Models;
 
 namespace PruebaBackAPI.Data;
 
-public class UserRepo<T> : IUserRepo<T> where T : User
+public class Repository<T> : IRepository<T> where T : User
 {
-    private readonly DbSet<T>? _entities;
     private readonly UserContext _context;
+    private readonly DbSet<T> _entities;
 
-    public UserRepo(UserContext context)
+    public Repository(UserContext context)
     {
         _entities = context.Set<T>();
         _context = context;
     }
+
     public async Task CreateUser(T user)
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        await _context.Users.AddAsync(user);
+        await _context.Users!.AddAsync(user);
     }
 
     public async Task<PaginationResult<T>> GetAllUsers(int page, int perPage)
@@ -25,26 +26,25 @@ public class UserRepo<T> : IUserRepo<T> where T : User
         var count = await _entities.CountAsync();
         var entsToSkip = (page - 1) * perPage;
         var entities = await _entities.OrderBy(ent => ent.id).Skip(entsToSkip).Take(perPage).ToListAsync();
-        
+
         return new PaginationResult<T>
         {
             TotalCount = count,
             Results = entities,
             ResultPerPage = perPage,
-            PageNumber = page,
+            PageNumber = page
         };
     }
 
     public async Task<T> GetUserById(int id)
     {
-        return await _entities.SingleOrDefaultAsync(ent => ent.id == id);
+        return (await _entities.SingleOrDefaultAsync(ent => ent.id == id))!;
     }
 
     public async Task<bool> SaveChanges()
     {
         var save = await _context.SaveChangesAsync();
 
-        return (save >= 0);
+        return save >= 0;
     }
-
 }
