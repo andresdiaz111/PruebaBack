@@ -14,14 +14,14 @@ public class Repository<T> : IRepository<T> where T : User
         _context = context;
     }
 
-    public async Task CreateUser(T user)
+    public async Task Create(T user)
     {
         ArgumentNullException.ThrowIfNull(user);
 
         await _context.Users!.AddAsync(user);
     }
 
-    public async Task<PaginationResult<T>> GetAllUsers(int page, int perPage)
+    public async Task<PaginationResult<T>> GetAll(int page, int perPage)
     {
         var count = await _entities.CountAsync();
         var entsToSkip = (page - 1) * perPage;
@@ -36,7 +36,7 @@ public class Repository<T> : IRepository<T> where T : User
         };
     }
 
-    public async Task<T> GetUserById(int id)
+    public async Task<T> GetById(int id)
     {
         return (await _entities.SingleOrDefaultAsync(ent => ent.id == id))!;
     }

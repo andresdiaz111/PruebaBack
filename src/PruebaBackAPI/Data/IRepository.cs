@@ -4,8 +4,8 @@ namespace PruebaBackAPI.Data;
 
 public interface IRepository<T>
 {
-    Task<PaginationResult<T>> GetAllUsers(int page, int perPage);
-    Task<T> GetUserById(int id);
-    Task CreateUser(T user);
+    Task<PaginationResult<T>> GetAll(int page, int perPage);
+    Task<T> GetById(int id);
+    Task Create(T user);
     Task<bool> SaveChanges();
 }

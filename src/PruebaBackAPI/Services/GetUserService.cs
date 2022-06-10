@@ -44,7 +44,7 @@ public class GetUserService<T> : IHostedService, IDisposable where T : User
 
         foreach (var userModel in response?.Data!.Select(i => _mapper.Map<T>(i))!)
         {
-            await _repository.CreateUser(userModel);
+            await _repository.Create(userModel);
         }
 
         await _repository.SaveChanges();

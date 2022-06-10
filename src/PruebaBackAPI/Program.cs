@@ -8,11 +8,12 @@ using PruebaBackAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dbbuilder = new NpgsqlConnectionStringBuilder();
-dbbuilder.ConnectionString =
-    builder.Configuration.GetConnectionString("PostgreSqlConnection");
-dbbuilder.Username = builder.Configuration["UserID"];
-dbbuilder.Password = builder.Configuration["Password"];
+var dbbuilder = new NpgsqlConnectionStringBuilder
+{
+    ConnectionString = builder.Configuration.GetConnectionString("PostgreSqlConnection"),
+    Username = builder.Configuration["UserID"],
+    Password = builder.Configuration["Password"]
+};
 
 builder.Services.AddDbContext<UserContext>(opt => { opt.UseNpgsql(dbbuilder.ConnectionString); });
 
@@ -31,7 +32,6 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
-builder.Services.AddScoped<Authorizer>();
 builder.Services.AddHostedService<GetUserService<User>>();
 var app = builder.Build();
 

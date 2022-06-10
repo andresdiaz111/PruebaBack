@@ -12,16 +12,18 @@ namespace PruebaBackAPI.Controllers;
 [Produces("application/json")]
 public class UserController : ControllerBase
 {
-    private readonly Authorizer _auth;
     private readonly IMapper _mapper;
     private readonly IRepository<User> _repository;
+    private readonly IConfiguration _configuration;
 
-    public UserController(IRepository<User> repository, IMapper mapper, Authorizer auth)
+    public UserController(IRepository<User> repository, IMapper mapper, IConfiguration configuration)
     {
         _repository = repository;
         _mapper = mapper;
-        _auth = auth;
+        _configuration = configuration;
     }
+    private const string ClientId = "0640000b-ec0b-4207-aab3-61e0481c405d";
+    private const string ClientSecret = "881cd158-adcd-4499-9366-93b55209cfa7";
 
     /// <summary>
     ///     Get user list paginated.
@@ -36,7 +38,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult> GetAllUsers([FromQuery] int page)
     {
         page = page == 0 ? 1 : page;
-        var userList = await _repository.GetAllUsers(page, 5);
+        var userList = await _repository.GetAll(page, 5);
 
         return Ok(_mapper.Map<PaginationDto<UserDto>>(userList));
     }
@@ -52,6 +54,7 @@ public class UserController : ControllerBase
     /// <response code="404">User not found.</response>
     /// <response code="400">Missing client_secret or client_id.</response>
     /// <response code="401">Wrong client_id or client_secret.</response>
+    [Authorizer(ClientId,ClientSecret)]
     [HttpGet("{id:int}", Name = "GetUserById")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -60,18 +63,15 @@ public class UserController : ControllerBase
     public async Task<ActionResult> GetUserById(int id, [FromHeader(Name = "client_secret")] string clientSecret,
         [FromHeader(Name = "client_id")] string clientId)
     {
-        var userItem = await _repository.GetUserById(id);
+        var userItem = await _repository.GetById(id);
 
         if (Equals(userItem, null))
             return NotFound("User not found.");
 
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
             return BadRequest("Missing client_secret ,client_id.");
-
-        if (_auth.EndPointAuth(clientId, clientSecret))
-            return Ok(_mapper.Map<UserDto>(userItem));
-
-        return Unauthorized("Wrong client_id or client_secret.");
+        
+        return Ok(_mapper.Map<UserDto>(userItem));
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<UserCreateDto>> CreateUser(UserCreateDto userToCreate)
     {
         var userModel = _mapper.Map<User>(userToCreate);
-        await _repository.CreateUser(userModel);
+        await _repository.Create(userModel);
         await _repository.SaveChanges();
 
         var userCreated = _mapper.Map<UserDto>(userModel);
@@ -107,7 +107,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> UpdateUser(int id, UserUpdateDto user)
     {
-        var userFromRepo = await _repository.GetUserById(id);
+        var userFromRepo = await _repository.GetById(id);
 
         if (Equals(userFromRepo, null))
             return NotFound("User not found");
