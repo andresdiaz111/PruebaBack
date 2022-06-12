@@ -14,16 +14,12 @@ public class UserController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IRepository<User> _repository;
-    private readonly IConfiguration _configuration;
 
     public UserController(IRepository<User> repository, IMapper mapper, IConfiguration configuration)
     {
         _repository = repository;
         _mapper = mapper;
-        _configuration = configuration;
     }
-    private const string ClientId = "0640000b-ec0b-4207-aab3-61e0481c405d";
-    private const string ClientSecret = "881cd158-adcd-4499-9366-93b55209cfa7";
 
     /// <summary>
     ///     Get user list paginated.
@@ -54,7 +50,7 @@ public class UserController : ControllerBase
     /// <response code="404">User not found.</response>
     /// <response code="400">Missing client_secret or client_id.</response>
     /// <response code="401">Wrong client_id or client_secret.</response>
-    [Authorizer(ClientId,ClientSecret)]
+    [Authorizer]
     [HttpGet("{id:int}", Name = "GetUserById")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -70,7 +66,7 @@ public class UserController : ControllerBase
 
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
             return BadRequest("Missing client_secret ,client_id.");
-        
+
         return Ok(_mapper.Map<UserDto>(userItem));
     }
 

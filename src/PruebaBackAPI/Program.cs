@@ -8,6 +8,9 @@ using PruebaBackAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var config = builder.Configuration;
+Config = config;
+
 var dbbuilder = new NpgsqlConnectionStringBuilder
 {
     ConnectionString = builder.Configuration.GetConnectionString("PostgreSqlConnection"),
@@ -16,7 +19,8 @@ var dbbuilder = new NpgsqlConnectionStringBuilder
 };
 
 builder.Services.AddDbContext<UserContext>(opt => { opt.UseNpgsql(dbbuilder.ConnectionString); });
-
+builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+builder.Services.AddHostedService<GetUserService<User>>();
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
@@ -31,11 +35,8 @@ builder.Services.AddSwaggerGen(options =>
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
-builder.Services.AddScoped<IRepository<User>, Repository<User>>();
-builder.Services.AddHostedService<GetUserService<User>>();
+
 var app = builder.Build();
-
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -49,3 +50,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public static partial class Program
+{
+    public static ConfigurationManager Config { get; private set; } = null!;
+}

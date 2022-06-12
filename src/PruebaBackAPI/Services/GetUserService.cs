@@ -9,8 +9,8 @@ public class GetUserService<T> : IHostedService, IDisposable where T : User
 {
     private readonly IMapper _mapper;
     private readonly IRepository<T> _repository;
-    private Timer? _timer;
     private int _pageCounter;
+    private Timer? _timer;
 
     public GetUserService(IServiceScopeFactory factory, IMapper mapper)
     {
@@ -42,10 +42,7 @@ public class GetUserService<T> : IHostedService, IDisposable where T : User
         var client = new RestClient("https://reqres.in/api/users");
         var response = await client.GetJsonAsync<ReqUser>($"?page={_pageCounter}");
 
-        foreach (var userModel in response?.Data!.Select(i => _mapper.Map<T>(i))!)
-        {
-            await _repository.Create(userModel);
-        }
+        foreach (var userModel in response?.Data!.Select(i => _mapper.Map<T>(i))!) await _repository.Create(userModel);
 
         await _repository.SaveChanges();
     }
