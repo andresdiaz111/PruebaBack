@@ -108,11 +108,11 @@ public class UserController : ControllerBase
         if (Equals(userFromRepo, null))
             return NotFound("User not found");
 
-        userFromRepo.email = !string.IsNullOrWhiteSpace(user.Email) ? user.Email : userFromRepo.email;
-        userFromRepo.first_name =
-            !string.IsNullOrWhiteSpace(user.First_name) ? user.First_name : userFromRepo.first_name;
-        userFromRepo.last_name = !string.IsNullOrWhiteSpace(user.Last_name) ? user.Last_name : userFromRepo.last_name;
-        userFromRepo.avatar = !string.IsNullOrWhiteSpace(user.Avatar) ? user.Avatar : userFromRepo.avatar;
+        userFromRepo.Email = !string.IsNullOrWhiteSpace(user.Email) ? user.Email : userFromRepo.Email;
+        userFromRepo.FirstName =
+            !string.IsNullOrWhiteSpace(user.FirstName) ? user.FirstName : userFromRepo.FirstName;
+        userFromRepo.LastName = !string.IsNullOrWhiteSpace(user.LastName) ? user.LastName : userFromRepo.LastName;
+        userFromRepo.Avatar = !string.IsNullOrWhiteSpace(user.Avatar) ? user.Avatar : userFromRepo.Avatar;
         await _repository.SaveChanges();
 
         return Ok("User updated");

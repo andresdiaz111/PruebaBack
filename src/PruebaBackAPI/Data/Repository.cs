@@ -25,7 +25,7 @@ public class Repository<T> : IRepository<T> where T : User
     {
         var count = await _entities.CountAsync();
         var entsToSkip = (page - 1) * perPage;
-        var entities = await _entities.OrderBy(ent => ent.id).Skip(entsToSkip).Take(perPage).ToListAsync();
+        var entities = await _entities.OrderBy(ent => ent.Id).Skip(entsToSkip).Take(perPage).ToListAsync();
 
         return new PaginationResult<T>
         {
@@ -38,7 +38,7 @@ public class Repository<T> : IRepository<T> where T : User
 
     public async Task<T> GetById(int id)
     {
-        return (await _entities.SingleOrDefaultAsync(ent => ent.id == id))!;
+        return (await _entities.SingleOrDefaultAsync(ent => ent.Id == id))!;
     }
 
     public async Task<bool> SaveChanges()
